@@ -67,9 +67,9 @@ def draw_board(board):
         #ZROBIC TU JESZCZE DLA KROLOWEK TEKST Cd Bd
             if board[row][column] == 3:
                 pygame.draw.circle(screen, white, rect_center, radius)
-                pygame.draw.circle(screen, gold, rect_center, radius, border)
+                pygame.draw.circle(screen, gold, rect_center, radius, granica)
             if board[row][column] == 4:
-                pygame.draw.circle(screen, gold, rect_center, radius, border)
+                pygame.draw.circle(screen, gold, rect_center, radius, granica)
     rect2 = pygame.draw.rect(screen, green, [650, 50, 300, 100])
     rect2_center = rect2.center #       srodek prostokatu(na tekst o turze)
     text_surface_obj = font_obj.render('Hello World!', True, black)     #tu bedzie tekst z tura
@@ -101,14 +101,40 @@ height = (window_height // total_rows)#75
 
 #Ustaw promień i ramkę graniczną każdego elementu szachownicy
 radius = (window_width // 20)#30
-border = (window_width // 200)#3
+granica = (window_width // 200)#3
 
 #Gra
 while game_over == False:
     #print("cos")
+    #umozliwiam zamkniecie okna i tworze pozycje myszy
+    for event in pygame.event.get():  # User did something
+        pozycja_myszy = pygame.mouse.get_pos()
+        pozycja_myszy_kordy = ((pozycja_myszy[0] // width), (pozycja_myszy[1] // height))
+        print(pozycja_myszy_kordy)#to jest sprawdzenie dzialania ! ZAKOMENTOWAC POTEM
+        #zdarzenia
+        if event.type == pygame.QUIT:  #exit?
+            game_over = True
+
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            pozycja = pygame.mouse.get_pos() #w pikselach
+            print("kliknales ", pozycja)
+            x = round(pozycja[0]/width,0) #zaokrąglam do 0 miejsa po przecinku
+            y = round(pozycja[1]/height,0)
+            print("kliknales ", (x,y)) #w kordach
+            while True:
+                ###TO NIE DZIALA TAK JAKBYM CHCIAL!!!!!!!!!
+                event = pygame.event.wait()
+                if event.type == pygame.QUIT:
+                    game_over = True
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    nowa_pozycja = pygame.mouse.get_pos()
+                    print("pos",nowa_pozycja)
+                    nowy_x = round((nowa_pozycja[0] / width),0)
+                    nowy_y = round((nowa_pozycja[1] / height),0)
+                    print("nowa pozycja ", (nowy_x, nowy_y))  # w kordach
 
 
-    # Limit to 60 frames per second
+    # Limit 60fps
     clock.tick(60)
 
     # Draw onto screen
