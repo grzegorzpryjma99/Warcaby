@@ -118,19 +118,19 @@ while game_over == False:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             pozycja = pygame.mouse.get_pos() #w pikselach
             print("kliknales ", pozycja)
-            x = round(pozycja[0]/width,0) #zaokrąglam do 0 miejsa po przecinku
-            y = round(pozycja[1]/height,0)
+            x = round(pozycja[0]//width,0) #zaokrąglam do 0 miejsa po przecinku
+            y = round(pozycja[1]//height,0)
             print("kliknales ", (x,y)) #w kordach
             while True:
-                ###TO NIE DZIALA TAK JAKBYM CHCIAL!!!!!!!!!
+                ###TO NIE DZIALA TAK JAKBYM CHCIAL!!!!!!!!!(DODALEM // ZAMIAST /, POWINNO BYC OK?)
                 event = pygame.event.wait()
                 if event.type == pygame.QUIT:
                     game_over = True
                 elif event.type == pygame.MOUSEBUTTONUP:
                     nowa_pozycja = pygame.mouse.get_pos()
                     print("pos",nowa_pozycja)
-                    nowy_x = round((nowa_pozycja[0] / width),0)
-                    nowy_y = round((nowa_pozycja[1] / height),0)
+                    nowy_x = round((nowa_pozycja[0] // width),0)
+                    nowy_y = round((nowa_pozycja[1] // height),0)
                     print("nowa pozycja ", (nowy_x, nowy_y))  # w kordach
 
 
