@@ -106,6 +106,37 @@ def wybor(board, gracz, x, y): #Gracz nie moze wybrac pustego pola lub nie swoje
         print("Tu nawet nie ma pionka")
         return False
 
+
+def ruch(gracz, board, x, y, nowy_x, nowy_y):
+    #Czy cos tam jest?
+    if board[nowy_y][nowy_x] != 0:
+        print("Cos tu jest mordo")
+        return False
+
+    # Ruch gracz1
+    if board[y][x] == 1:
+        if (nowy_y - y) == -1 and (nowy_x - x) == 1:
+            return True
+        elif (nowy_y - y) == -1 and (nowy_x - x) == -1:
+            return True
+     #jump
+    ####################################33
+    #ruch gracz2
+    elif board[y][x] == 2:
+        if (nowy_y - y) == 1 and (nowy_x - x) == 1:
+            return True
+        elif (nowy_y - y) == 1 and (nowy_x - x) == -1:
+            return True
+    #jump
+def czy_ktos_wygral(gracz, board):
+    lista = []
+    for row in board:
+        lista.append(row.count(gracz2['pionek']))
+        #Jeszcze dla krolowek zrobiccccc
+    if sum(lista) == 0:
+        print("Wygrał gracz: ", gracz)
+        return True
+
 #Ustalam ze gra sie nie skonczyla
 game_over = False
 
@@ -177,6 +208,14 @@ while game_over == False:
                     print("nowa pozycja ", (nowy_x, nowy_y))  # w kordach
 
                     #print(gracz)
+
+                    if board[y][x] == gracz1['pionek']:
+                        if ruch(gracz, board, x, y, nowy_x, nowy_y) is True:
+                            board[nowy_y][nowy_x] = gracz1['pionek']
+                            board[y][x] = 0
+
+                            if czy_ktos_wygral(gracz, board) is True:
+                                game_over = True
 
 
 
