@@ -112,22 +112,45 @@ def ruch(gracz, board, x, y, nowy_x, nowy_y):
     if board[nowy_y][nowy_x] != 0:
         print("Cos tu jest mordo")
         return False
-
+    ##Obsluga bicia pionkow (mozliwosci bicia)
     # Ruch gracz1
     if board[y][x] == 1:
         if (nowy_y - y) == -1 and (nowy_x - x) == 1:
             return True
         elif (nowy_y - y) == -1 and (nowy_x - x) == -1:
             return True
-     #jump
-    ####################################33
+        elif (nowy_y - y) == -2 and (nowy_x - x) == 2:
+            if board[nowy_y + 1][nowy_x - 1] == gracz2['pionek']:
+                board[nowy_y + 1][nowy_x - 1] = 0
+                return True
+            else:
+                return False
+        elif (nowy_y - y) == -2 and (nowy_x - x) == -2:
+            if board[nowy_y + 1][nowy_x + 1] == gracz2['pionek']:
+                board[nowy_y + 1][nowy_x + 1] = 0
+                return True
+            else:
+                return False
+
     #ruch gracz2
     elif board[y][x] == 2:
         if (nowy_y - y) == 1 and (nowy_x - x) == 1:
             return True
         elif (nowy_y - y) == 1 and (nowy_x - x) == -1:
             return True
-    #jump
+        elif (nowy_y - y) == 2 and (nowy_x - x) == 2:
+            if board[nowy_y - 1][nowy_x - 1] == gracz2['pionek']:
+                board[nowy_y - 1][nowy_x - 1] = 0
+                return True
+            else:
+                return False
+        elif (nowy_y - y) == 2 and (nowy_x - x) == -2:
+            if board[nowy_y - 1][nowy_x + 1] == gracz2['pionek']:
+                board[nowy_y - 1][nowy_x + 1] = 0
+                return True
+            else:
+                return False
+
 def czy_ktos_wygral(gracz, board):
     lista = []
     for row in board:
@@ -136,6 +159,33 @@ def czy_ktos_wygral(gracz, board):
     if sum(lista) == 0:
         print("Wygrał gracz: ", gracz)
         return True
+
+def podwojne_bicie(board, nowy_x, nowy_y):
+    #w ktora strone mozna bic(mozliwe ruchy)
+    if gracz == 1:
+        #dodac krolowki!!!!!!!!!!!!!!!!!!!!
+        try:
+            if board[nowy_y - 2][nowy_x + 2] == 0:
+                if board[nowy_y - 1][nowy_x + 1] == gracz2['pionek']:
+                    return True
+            elif board[nowy_y - 2][nowy_x - 2] == 0:
+                if board[nowy_y - 1][nowy_x + 1] == gracz2['pionek']:
+                    return True
+        except IndexError:
+            pass
+    if gracz == 2:
+        try:
+            if board[nowy_y + 2][nowy_x + 2] == 0:
+                if board[nowy_y - 1][nowy_x + 1] == gracz2['pionek']:
+                    return True
+            elif board[nowy_y + 2][nowy_x - 2] == 0:
+                if board[nowy_y - 1][nowy_x + 1] == gracz2['pionek']:
+                    return True
+        except IndexError:
+            pass
+   #zrobic jeszcze z krolem [if krolowka....]
+    else:
+        return False
 
 #Ustalam ze gra sie nie skonczyla
 game_over = False
@@ -166,11 +216,14 @@ granica = (window_width // 200)#3
 
 #Domyslnie bedzie zaczynal gracz 1 (bialy)
 gracz = 1
+
 print("Tura gracza: " , gracz)
-tura(1)
+tura(gracz)
 
 #Gra
 while game_over == False:
+    #print("NUUUUUUUUUUUUEEEEMR", numer)
+   # tura(gracz)
     #print("cos")
     #umozliwiam zamkniecie okna i tworze pozycje myszy
     for event in pygame.event.get():  # User did something
@@ -187,6 +240,8 @@ while game_over == False:
             x = round(pozycja[0]//width,0) #zaokrąglam do 0 miejsa po przecinku
             y = round(pozycja[1]//height,0)
             print("kliknales ", (x,y)) #w kordach
+
+            suma_wczesniej = sum([sum(row) for row in board])
 
             #Tu sobie sprawdzam czy wybrany pionek jest gracza ktory ma ture w danym monencie
             if wybor(board, gracz, x, y) == True:
@@ -207,31 +262,53 @@ while game_over == False:
                     nowy_y = round((nowa_pozycja[1] // height),0)
                     print("nowa pozycja ", (nowy_x, nowy_y))  # w kordach
 
-                    #print(gracz)
+                    print(gracz)
 
                     if board[y][x] == gracz1['pionek']:
                         if ruch(gracz, board, x, y, nowy_x, nowy_y) is True:
                             board[nowy_y][nowy_x] = gracz1['pionek']
                             board[y][x] = 0
+                           # tura(gracz)
 
                             if czy_ktos_wygral(gracz, board) is True:
                                 game_over = True
 
+                            suma_teraz = sum([sum(row) for row in board])
 
-
-
-
+                            #zmiana gracza
+                            
+                            #tu sobie sprawdzam czy suma pionkow ulegla zmianie i dokonuje zmiany lub nie
+                            if suma_wczesniej > suma_teraz:
+                                #i czy gracz bedzie mial kolejny ruch(zasada ze po biciu drugi ruch)
+                                if podwojne_bicie(board,nowy_x,nowy_y) is True:
+                                    pass
+                                else:
+                                    #jesli nie to zmieniam gracza
+                                    if gracz == 1:
+                                        gracz = 2
+                                        tura(gracz)
+                                        # i tu zrobic wypisanie na okno czyja tura
+                                    else:
+                                        gracz = 1
+                                        tura(gracz)
+                                        # i tu tez zrobic!
+                                    gracz1, gracz2 = gracz2, gracz1
+                            else:
+                                if gracz == 1:
+                                    gracz = 2
+                                    tura(gracz)
+                                    #i tu zrobic wypisanie na okno czyja tura
+                                else:
+                                    gracz = 1
+                                    tura(gracz)
+                                    #i tu tez zrobic!
+                                gracz1, gracz2 = gracz2, gracz1
+                    break
 
     # Limit 60fps
     clock.tick(60)
-
-    # Draw onto screen
     draw_board(board)
-
     # Update screen with what we drew
     pygame.display.flip()
-    #time.sleep(2)
-    #tura(2)
-
 # Exit the game
 pygame.quit()
