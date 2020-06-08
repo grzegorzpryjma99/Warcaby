@@ -11,11 +11,11 @@ dark_red = (139 , 0, 0)
 grey = (128, 128, 128)
 gold = (255, 215, 0)
 empty = 0
-rows = 8
-columns = 8
+rows = 13
+columns = 13
 gracz1 = {'pionek': 1, 'krolowka': 3}
 gracz2 = {'pionek': 2, 'krolowka': 4}
-
+przycisk_reset = [(8, 6), (9, 6), (10, 6), (11, 6), (12, 6), (13, 6), (8, 7), (9, 7), (10, 7), (11, 7), (12, 7),(13, 7)]
 
 
 #tworze plansze
@@ -24,21 +24,34 @@ def create_board():
     return board
 
 def poczatkowe_rozmieszczenie():
+    #zawsze ustalam takie poczatkowe wartosci
+    gracz1 = {'pionek': 1, 'krolowka': 3}
+    gracz2 = {'pionek': 2, 'krolowka': 4}
     #przydzielanie elementow i lokalizacji dla bialych
     for current_row in range(5, 8, 2):
         for current_column in range(0, 8, 2):
             board[current_row][current_column] = gracz1['pionek']
+            print("board1 ", board[current_row][current_column])
     for current_row in range(6, 7):
         for current_column in range(1, 8, 2):
             board[current_row][current_column] = gracz1['pionek']
-
+            print("board2 ", board[current_row][current_column])
     #przydzielanie lokalizacji planszy dla czarnych
     for current_row in range(0, 3, 2):
         for current_column in range(1, 8, 2):
             board[current_row][current_column] = gracz2['pionek']
+            print("board3 ", board[current_row][current_column])
     for current_row in range(1, 2):
         for current_column in range(0, 8, 2):
             board[current_row][current_column] = gracz2['pionek']
+            print("board4 ", board[current_row][current_column])
+
+        # przydzielanie lokalizacji planszy dla pustych
+    for current_row in range(3, 5, 1):
+        for current_column in range(0, 8, 1):
+            board[current_row][current_column] = 0
+            print("board3 ", board[current_row][current_column])
+
 
 
 def draw_board(board):
@@ -73,18 +86,18 @@ def draw_board(board):
                 pygame.draw.circle(screen, gold, rect_center, radius, granica)
             if board[row][column] == 4:
                 pygame.draw.circle(screen, gold, rect_center, radius, granica)
-    """
-    rect2 = pygame.draw.rect(screen, green, [650, 50, 300, 100])
-    rect2_center = rect2.center #       srodek prostokatu(na tekst o turze)
-    text_surface_obj = font_obj.render('Hello World!', True, black)     #tu bedzie tekst z tura
+
+    rect2 = pygame.draw.rect(screen, green, [600, 450, 400, 150])
+    rect2_center = rect2.center #       srodek prostokatu
+    text_surface_obj = font_obj.render('Reset', True, black)
     text_rect_obj = text_surface_obj.get_rect()
     text_rect_obj.center = rect2_center
     screen.blit(text_surface_obj, text_rect_obj)
-    """
+
 
 def tura(gracz):
     font_obj = pygame.font.Font('freesansbold.ttf', 20)
-    rect2 = pygame.draw.rect(screen, green, [650, 50, 300, 100])
+    rect2 = pygame.draw.rect(screen, green, [600, 0, 400, 150])
     rect2_center = rect2.center  # srodek prostokatu(na tekst o turze)
     if gracz == 1:
         tekst = "Tura Gracza 1 "
@@ -97,14 +110,21 @@ def tura(gracz):
 
 def wybor(board, gracz, x, y): #Gracz nie moze wybrac pustego pola lub nie swojego pionka
     wybor_tab = board[y][x]
-    if wybor_tab == gracz1['pionek']: # TU BEDZIE JESZCZE OR i dla krolowki
+    #print("WYBORRRRRRRR",wybor_tab)
+    if (x,y) in przycisk_reset:
+        print("RESET")
+        board = create_board()
+        poczatkowe_rozmieszczenie()
+        return board
+    elif wybor_tab == gracz1['pionek']: # TU BEDZIE JESZCZE OR i dla krolowki
         return True
     elif wybor_tab == gracz2['pionek']: #tu tez
         print("To nie twoje")
         return False
     else:
-        print("Tu nawet nie ma pionka")
-        return False
+       print("Tu nawet nie ma pionka")
+       return False
+
 
 
 def ruch(gracz, board, x, y, nowy_x, nowy_y):
@@ -115,9 +135,19 @@ def ruch(gracz, board, x, y, nowy_x, nowy_y):
     ##Obsluga bicia pionkow (mozliwosci bicia)
     # Ruch gracz1
     if board[y][x] == 1:
+        #blokuje wyjscie za plansze
+        if nowy_x == 8:
+            print("Nie mozna ruszać poza plansze")
+            return False
         if (nowy_y - y) == -1 and (nowy_x - x) == 1:
+            print('1111',nowy_y - y)
+            print('2222',nowy_x - x)
+            print('1111', nowy_y)
+            print('2222', nowy_x)
             return True
         elif (nowy_y - y) == -1 and (nowy_x - x) == -1:
+            print(nowy_y-y)
+            print(nowy_x-x)
             return True
         elif (nowy_y - y) == -2 and (nowy_x - x) == 2:
             if board[nowy_y + 1][nowy_x - 1] == gracz2['pionek']:
@@ -134,6 +164,10 @@ def ruch(gracz, board, x, y, nowy_x, nowy_y):
 
     #ruch gracz2
     elif board[y][x] == 2:
+        #blokuje wyjscie za plansze
+        if nowy_x == 8:
+            print("Nie mozna ruszać poza plansze")
+            return False
         if (nowy_y - y) == 1 and (nowy_x - x) == 1:
             return True
         elif (nowy_y - y) == 1 and (nowy_x - x) == -1:
@@ -187,12 +221,22 @@ def podwojne_bicie(board, nowy_x, nowy_y):
     else:
         return False
 
+def reset(pozycja):
+    przycisk_reset = [(8,6),(9,6),(10,6),(11,6),(12,6),(13,6),(8,7),(9,7),(10,7),(11,7),(12,7),(13,7)]
+    if pozycja in przycisk_reset:
+        return True
+    else:
+        return False
+
+
+
+
+
+
 #Ustalam ze gra sie nie skonczyla
 game_over = False
-
 board = create_board()
 poczatkowe_rozmieszczenie()
-
 # Inicjuje pygame
 pygame.init()
 # Rozdzielczosc
@@ -216,7 +260,6 @@ granica = (window_width // 200)#3
 
 #Domyslnie bedzie zaczynal gracz 1 (bialy)
 gracz = 1
-
 print("Tura gracza: " , gracz)
 tura(gracz)
 
@@ -226,7 +269,7 @@ while game_over == False:
    # tura(gracz)
     #print("cos")
     #umozliwiam zamkniecie okna i tworze pozycje myszy
-    for event in pygame.event.get():  # User did something
+    for event in pygame.event.get():
         pozycja_myszy = pygame.mouse.get_pos()
         pozycja_myszy_kordy = ((pozycja_myszy[0] // width), (pozycja_myszy[1] // height))
         print(pozycja_myszy_kordy)#to jest sprawdzenie dzialania ! ZAKOMENTOWAC POTEM
@@ -235,11 +278,19 @@ while game_over == False:
             game_over = True
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
+            #if reset(pozycja_myszy_kordy) is True:
+               ## poczatkowe_rozmieszczenie()
+               # print("Ustawiono początkowe")
+            #elif reset(pozycja_myszy_kordy) is False:
+                #print("Nie ustawiono początkowego")
+
             pozycja = pygame.mouse.get_pos() #w pikselach
             print("kliknales ", pozycja)
             x = round(pozycja[0]//width,0) #zaokrąglam do 0 miejsa po przecinku
             y = round(pozycja[1]//height,0)
             print("kliknales ", (x,y)) #w kordach
+
+
 
             suma_wczesniej = sum([sum(row) for row in board])
 
@@ -273,10 +324,11 @@ while game_over == False:
                             if czy_ktos_wygral(gracz, board) is True:
                                 game_over = True
 
+
                             suma_teraz = sum([sum(row) for row in board])
 
                             #zmiana gracza
-                            
+
                             #tu sobie sprawdzam czy suma pionkow ulegla zmianie i dokonuje zmiany lub nie
                             if suma_wczesniej > suma_teraz:
                                 #i czy gracz bedzie mial kolejny ruch(zasada ze po biciu drugi ruch)
@@ -304,7 +356,8 @@ while game_over == False:
                                     #i tu tez zrobic!
                                 gracz1, gracz2 = gracz2, gracz1
                     break
-
+   # print("GRACZ1 = ",gracz1)
+    #print("GRACZ2 = ",gracz2)
     # Limit 60fps
     clock.tick(60)
     draw_board(board)
