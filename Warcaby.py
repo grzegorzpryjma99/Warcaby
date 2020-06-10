@@ -281,8 +281,12 @@ def ogranicz(board, x, y, nowy_x, nowy_y):
             board[y][x] = 0
             return True
 
-    # czy krolowka tez moze ruszac sie jak pionek?
-
+    # czy krolowka tez moze ruszac sie jak pionek? Na wikipedii jest ze tak
+    elif len(board_values) == 1:
+        if all(i == 0 for i in board_values[1:]) is True:
+            board[nowy_y][nowy_x] = board[y][x]
+            board[y][x] = 0
+            return True
     else:
         print("Nie mozesz kilku jednoczesnie")
         return False
