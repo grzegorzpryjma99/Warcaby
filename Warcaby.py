@@ -16,7 +16,7 @@ columns = 13
 gracz1 = {'pionek': 1, 'krolowka': 3}
 gracz2 = {'pionek': 2, 'krolowka': 4}
 przycisk_reset = [(8, 6), (9, 6), (10, 6), (11, 6), (12, 6), (13, 6), (8, 7), (9, 7), (10, 7), (11, 7), (12, 7),(13, 7)]
-
+gracz = 1
 
 #tworze plansze
 def create_board():
@@ -52,8 +52,6 @@ def poczatkowe_rozmieszczenie():
             board[current_row][current_column] = 0
             print("board3 ", board[current_row][current_column])
 
-
-
 def draw_board(board):
     font_obj = pygame.font.Font('freesansbold.ttf', 20)
     for row in range(8):
@@ -82,10 +80,19 @@ def draw_board(board):
             #krolowki
         #ZROBIC TU JESZCZE DLA KROLOWEK TEKST Cd Bd
             if board[row][column] == 3:
-                pygame.draw.circle(screen, white, rect_center, radius)
-                pygame.draw.circle(screen, gold, rect_center, radius, granica)
+                circle_white_krol = pygame.draw.circle(screen, white, rect_center, radius)
+                circle_white_center_krol = circle_white_krol.center
+                text_surface_obj = font_obj.render('Bd', True, black)
+                text_rect_obj = text_surface_obj.get_rect()
+                text_rect_obj.center = circle_white_center_krol
+                screen.blit(text_surface_obj, text_rect_obj)
             if board[row][column] == 4:
-                pygame.draw.circle(screen, gold, rect_center, radius, granica)
+                circle_black_krol = pygame.draw.circle(screen, black, rect_center, radius)
+                circle_black_center_krol = circle_black_krol.center
+                text_surface_obj = font_obj.render('Cd', True, white)
+                text_rect_obj = text_surface_obj.get_rect()
+                text_rect_obj.center = circle_black_center_krol
+                screen.blit(text_surface_obj, text_rect_obj)
 
     rect2 = pygame.draw.rect(screen, green, [600, 450, 400, 150])
     rect2_center = rect2.center #       srodek prostokatu
@@ -93,7 +100,6 @@ def draw_board(board):
     text_rect_obj = text_surface_obj.get_rect()
     text_rect_obj.center = rect2_center
     screen.blit(text_surface_obj, text_rect_obj)
-
 
 def tura(gracz):
     font_obj = pygame.font.Font('freesansbold.ttf', 20)
@@ -111,21 +117,15 @@ def tura(gracz):
 def wybor(board, gracz, x, y): #Gracz nie moze wybrac pustego pola lub nie swojego pionka
     wybor_tab = board[y][x]
     #print("WYBORRRRRRRR",wybor_tab)
-    if (x,y) in przycisk_reset:
-        print("RESET")
-        board = create_board()
-        poczatkowe_rozmieszczenie()
-        return board
-    elif wybor_tab == gracz1['pionek']: # TU BEDZIE JESZCZE OR i dla krolowki
+
+    if wybor_tab == gracz1['pionek'] or gracz1['krolowka']:
         return True
-    elif wybor_tab == gracz2['pionek']: #tu tez
+    elif wybor_tab == gracz2['pionek'] or gracz2['krolowka']:
         print("To nie twoje")
         return False
     else:
        print("Tu nawet nie ma pionka")
        return False
-
-
 
 def ruch(gracz, board, x, y, nowy_x, nowy_y):
     #Czy cos tam jest?
@@ -150,17 +150,20 @@ def ruch(gracz, board, x, y, nowy_x, nowy_y):
             print(nowy_x-x)
             return True
         elif (nowy_y - y) == -2 and (nowy_x - x) == 2:
-            if board[nowy_y + 1][nowy_x - 1] == gracz2['pionek']:
+            if board[nowy_y + 1][nowy_x - 1] == gracz2['pionek'] or gracz2['krolowka']:
                 board[nowy_y + 1][nowy_x - 1] = 0
                 return True
             else:
                 return False
         elif (nowy_y - y) == -2 and (nowy_x - x) == -2:
-            if board[nowy_y + 1][nowy_x + 1] == gracz2['pionek']:
+            if board[nowy_y + 1][nowy_x + 1] == gracz2['pionek'] or gracz2['krolowka']:
                 board[nowy_y + 1][nowy_x + 1] = 0
                 return True
             else:
                 return False
+        else:
+            print("za daleko")
+            return False
 
     #ruch gracz2
     elif board[y][x] == 2:
@@ -173,22 +176,26 @@ def ruch(gracz, board, x, y, nowy_x, nowy_y):
         elif (nowy_y - y) == 1 and (nowy_x - x) == -1:
             return True
         elif (nowy_y - y) == 2 and (nowy_x - x) == 2:
-            if board[nowy_y - 1][nowy_x - 1] == gracz2['pionek']:
+            if board[nowy_y - 1][nowy_x - 1] == gracz2['pionek'] or gracz2['krolowka']:
                 board[nowy_y - 1][nowy_x - 1] = 0
                 return True
             else:
                 return False
         elif (nowy_y - y) == 2 and (nowy_x - x) == -2:
-            if board[nowy_y - 1][nowy_x + 1] == gracz2['pionek']:
+            if board[nowy_y - 1][nowy_x + 1] == gracz2['pionek'] or gracz2['krolowka']:
                 board[nowy_y - 1][nowy_x + 1] = 0
                 return True
             else:
                 return False
+        else:
+            print("za daleko")
+            return False
 
 def czy_ktos_wygral(gracz, board):
     lista = []
     for row in board:
         lista.append(row.count(gracz2['pionek']))
+        lista.append(row.count(gracz2['krolowka']))
         #Jeszcze dla krolowek zrobiccccc
     if sum(lista) == 0:
         print("Wygrał gracz: ", gracz)
@@ -200,38 +207,160 @@ def podwojne_bicie(board, nowy_x, nowy_y):
         #dodac krolowki!!!!!!!!!!!!!!!!!!!!
         try:
             if board[nowy_y - 2][nowy_x + 2] == 0:
-                if board[nowy_y - 1][nowy_x + 1] == gracz2['pionek']:
+                if board[nowy_y - 1][nowy_x + 1] == gracz2['pionek'] or gracz2['krolowka']:
                     return True
             elif board[nowy_y - 2][nowy_x - 2] == 0:
-                if board[nowy_y - 1][nowy_x + 1] == gracz2['pionek']:
+                if board[nowy_y - 1][nowy_x + 1] == gracz2['pionek'] or gracz2['krolowka']:
                     return True
         except IndexError:
             pass
     if gracz == 2:
         try:
             if board[nowy_y + 2][nowy_x + 2] == 0:
-                if board[nowy_y - 1][nowy_x + 1] == gracz2['pionek']:
+                if board[nowy_y - 1][nowy_x + 1] == gracz2['pionek'] or gracz2['krolowka']:
                     return True
             elif board[nowy_y + 2][nowy_x - 2] == 0:
-                if board[nowy_y - 1][nowy_x + 1] == gracz2['pionek']:
+                if board[nowy_y - 1][nowy_x + 1] == gracz2['pionek'] or gracz2['krolowka']:
                     return True
         except IndexError:
             pass
-   #zrobic jeszcze z krolem [if krolowka....]
+    if board[nowy_y][nowy_x] == gracz1['krolowka']:
+        try:
+            for i in range(8):
+                if board[nowy_y - i][nowy_x + i] == gracz2['krolowka']:
+                    if board[nowy_y - (i+1)][nowy_x + (i+1)] == 0:
+                        return True
+                elif board[nowy_y - i][nowy_x - i] == gracz2['krolowka']:
+                    if board[nowy_y - (i+1)][nowy_x - (i+1)] == 0:
+                        return True
+                elif board[nowy_y + i][nowy_x + i] ==  gracz2['krolowka']:
+                    if board[nowy_y + (i+1)][nowy_x + (i+1)] == 0:
+                        return True
+                elif board[nowy_y + i][nowy_x - i] == gracz2['krolowka']:
+                    if board[nowy_y + (i+1)][nowy_x - (i+1)] == 0:
+                        return True
+        except IndexError:
+            pass
     else:
         return False
 
-def reset(pozycja):
-    przycisk_reset = [(8,6),(9,6),(10,6),(11,6),(12,6),(13,6),(8,7),(9,7),(10,7),(11,7),(12,7),(13,7)]
-    if pozycja in przycisk_reset:
+def ogranicz(board, x, y, nowy_x, nowy_y):
+    tabx = []
+    taby = []
+    if y < nowy_y:
+        for row in range(y, nowy_y):
+            taby.append(row)
+    if y > nowy_y:
+        for row in range(y, nowy_y, -1):
+            taby.append(row)
+    if x < nowy_x:
+        for column in range(x, nowy_x):
+            tabx.append(column)
+    if x > nowy_x:
+        for column in range(x, nowy_x, -1):
+            tabx.append(column)
+    tab = list(zip(tabx, taby))
+    board_values = [board[y][x] for x, y in tab]
+    if len(board_values) > 2:
+        if all(i == 0 for i in board_values[1:-1]) is True:
+            board[nowy_y][nowy_x] = board[y][x]
+            board[y][x] = 0
+            return True
+
+    if len(board_values) == 2:
+        if all(i == gracz2['pionek'] for i in board_values[1:]) is True:
+            board[nowy_y][nowy_x] = board[y][x]
+            board[y][x] = 0
+            return True
+        elif all(i == gracz2['krolowka'] for i in board_values[1:]) is True:
+            board[nowy_y][nowy_x] = board[y][x]
+            board[y][x] = 0
+            return True
+        elif all(i == 0 for i in board_values[1:]) is True:
+            board[nowy_y][nowy_x] = board[y][x]
+            board[y][x] = 0
+            return True
+
+    # czy krolowka tez moze ruszac sie jak pionek?
+
+    else:
+        print("Nie mozesz kilku jednoczesnie")
+        return False
+
+def krol(gracz, board, x, y, nowy_x, nowy_y):
+    if board[nowy_y][nowy_x] != 0:
+        print("Ktos tutaj stoi")
+        return False
+
+    #niedozwolone ruchy
+    if nowy_y == y:
+        print("Nie możesz wykonac takiego ruchu")
+        return False
+    if nowy_x == x:
+        print("Nie możesz wykonac takiego ruchu")
+        return False
+
+    if nowy_x > x and nowy_y > y:
+        if (nowy_x - x) != (nowy_y - y):
+            return False
+    if nowy_x < x and nowy_y < y:
+        if (x - nowy_x) != (y - nowy_y):
+            return False
+    if nowy_x < x and nowy_y > y:
+        if (x - nowy_x) != (nowy_y - y):
+            return False
+    if nowy_x > x and nowy_y < y:
+        if (nowy_x - x) != (y - nowy_y):
+            return False
+
+    #skoki
+    if board[y][x] == gracz1['krolowka']:
+        try:
+            if board[nowy_y + 1][nowy_x - 1] == gracz2['pionek'] or gracz2['krolowka']:
+                if x < nowy_x and y > nowy_y:
+                    if ogranicz(board, x,y, nowy_x, nowy_y) is True:
+                        board[nowy_y][nowy_x] = gracz1['krolowka']
+                        board[nowy_y + 1][nowy_x - 1] = 0
+                        return True
+        except IndexError:
+            pass
+        try:  # North West Jump
+            if board[nowy_y + 1][nowy_x + 1] == gracz2['pionek'] or gracz2['krolowka']:
+                if x > nowy_x and y > nowy_y:
+                    if ogranicz(board, x, y, nowy_x, nowy_y) is True:
+                        board[nowy_y][nowy_x] = gracz1['krolowka']
+                        board[nowy_y + 1][nowy_x + 1] = 0
+                        return True
+        except IndexError:
+            pass
+        try:
+            if board[nowy_y - 1][nowy_x - 1] == gracz2['pionek'] or gracz2['krolowka']:
+                if ogranicz(board, x, y, nowy_x, nowy_y) is True:
+                    if x < nowy_x and y < nowy_y:
+                        board[nowy_y][nowy_x] = gracz1['krolowka']
+                        board[nowy_y - 1][nowy_x - 1] = 0
+                        return True
+        except IndexError:
+            pass
+        try:
+            if board[nowy_y - 1][nowy_x + 1] == gracz2['pionek'] or gracz2['pionek']:
+                if ogranicz(board, x, y, nowy_x, nowy_y) is True:
+                    if x > nowy_x and y < nowy_y:
+                        board[nowy_y][nowy_x] = gracz1['krolowka']
+                        board[nowy_y - 1][nowy_x + 1] = 0
+                        return True
+        except IndexError:
+            pass
+
+def reset(x,y):#on bedzie inny
+    if (x,y) in przycisk_reset:
+        print("RESET")
+        create_board()
+        poczatkowe_rozmieszczenie()
+        gracz = 1
+        print("Tura gracza: ", gracz)
+        tura(gracz)
         return True
-    else:
-        return False
-
-
-
-
-
 
 #Ustalam ze gra sie nie skonczyla
 game_over = False
@@ -290,7 +419,8 @@ while game_over == False:
             y = round(pozycja[1]//height,0)
             print("kliknales ", (x,y)) #w kordach
 
-
+            if reset(x,y) == True:#to nie dziala jakbym chcial, chyba musze zrobic z game()
+                gracz = 1
 
             suma_wczesniej = sum([sum(row) for row in board])
 
@@ -299,7 +429,6 @@ while game_over == False:
                 pass
             else:
                 continue
-
             #jesli tak to ustalam nowa pozycja za pomoca przeciagniecia
             while True:
                 ###TO NIE DZIALA TAK JAKBYM CHCIAL!!!!!!!!!(DODALEM // ZAMIAST /, POWINNO BYC OK?)
@@ -331,7 +460,7 @@ while game_over == False:
 
                             #tu sobie sprawdzam czy suma pionkow ulegla zmianie i dokonuje zmiany lub nie
                             if suma_wczesniej > suma_teraz:
-                                #i czy gracz bedzie mial kolejny ruch(zasada ze po biciu drugi ruch)
+                                #i czy gracz bedzie mial kolejny ruch(zasada ze po biciu drugi ruch gdy mozliwe bicie)
                                 if podwojne_bicie(board,nowy_x,nowy_y) is True:
                                     pass
                                 else:
@@ -355,6 +484,46 @@ while game_over == False:
                                     tura(gracz)
                                     #i tu tez zrobic!
                                 gracz1, gracz2 = gracz2, gracz1
+                    if board[y][x] == (gracz1['krolowka']):
+                        if krol(gracz, board, x, y, nowy_x, nowy_y) is True:
+
+                            if czy_ktos_wygral(gracz, board) is True:
+                                game_over = True
+
+                            suma_teraz = sum([sum(row) for row in board])
+
+                            if suma_wczesniej > suma_teraz:
+                                if podwojne_bicie(board, nowy_x, nowy_y) is True:
+                                    pass
+                                else:
+                                # jesli nie to zmieniam gracza
+                                    if gracz == 1:
+                                        gracz = 2
+                                        tura(gracz)
+                                        # i tu zrobic wypisanie na okno czyja tura
+                                    else:
+                                        gracz = 1
+                                        tura(gracz)
+                                        # i tu tez zrobic!
+                                    gracz1, gracz2 = gracz2, gracz1
+                            else:
+                                if gracz == 1:
+                                    gracz = 2
+                                    tura(gracz)
+                                    # i tu zrobic wypisanie na okno czyja tura
+                                else:
+                                    gracz = 1
+                                    tura(gracz)
+                                    # i tu tez zrobic!
+                                gracz1, gracz2 = gracz2, gracz1
+
+                    #zamiana na krola jak dojdzie do samego konca
+                    for row in range(8):
+                        for column in range(8):
+                            if board[0][column] == 1:
+                                board[0][column] = 3
+                            elif board[7][column] == 2:
+                                board[7][column] = 4
                     break
    # print("GRACZ1 = ",gracz1)
     #print("GRACZ2 = ",gracz2)
