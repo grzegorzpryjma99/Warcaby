@@ -1,6 +1,5 @@
 import pygame
 #Zgodnie z wymaganiami projektu podział na minimum 2 klasy...
-
 class Interface:
     __empty = 0
     __rows = 13
@@ -12,8 +11,9 @@ class Interface:
     __black = (0, 0, 0)
     __green = (0, 255, 0)
     __white = (255, 255, 255)
+    __crimson = (220,20,60)
     #Rozmiary
-    __window_size = [1000, 600]
+    __window_size = [975, 600]
     __window_width = 600
     __window_height = 600
     __screen = pygame.display.set_mode(__window_size)
@@ -105,12 +105,33 @@ class Interface:
                     text_rect_obj.center = circle_black_center_krol
                     self.__screen.blit(text_surface_obj, text_rect_obj)
 
-        rect2 = pygame.draw.rect(self.__screen, self.__green, [600, 450, 400, 150])
+        rect2 = pygame.draw.rect(self.__screen, self.__green, [600, 450, 375, 150])
         rect2_center = rect2.center  # srodek prostokatu
         text_surface_obj = font_obj.render('Reset', True, self.__black)
         text_rect_obj = text_surface_obj.get_rect()
         text_rect_obj.center = rect2_center
         self.__screen.blit(text_surface_obj, text_rect_obj)
+
+        rect4 = pygame.draw.rect(self.__screen, self.__green, [600, 155, 375, 290])
+        rect4_center = rect4.center  # srodek prostokatu
+        text_surface_obj = font_obj.render('Komunikaty', True, self.__black)
+        text_rect_obj = text_surface_obj.get_rect()
+        text_rect_obj.center = rect4_center
+        self.__screen.blit(text_surface_obj, text_rect_obj)
+
+        if game.czy_ktos_wygral(board) is True:
+            if game.getGracz() == 1:
+                tekst_koncowy = ("Wygrał gracz 1 Return (Space)")
+            elif game.getGracz() == 2:
+                tekst_koncowy = ("Wygrał gracz 2 Return (Space)")
+            rect3 = pygame.draw.rect(self.__screen, self.__crimson, [300, 225, 375, 150])
+            rect3_center = rect3.center  # srodek prostokatu
+            text_surface_obj = font_obj.render(tekst_koncowy, True, self.__black)
+            text_rect_obj = text_surface_obj.get_rect()
+            text_rect_obj.center = rect3_center
+            self.__screen.blit(text_surface_obj, text_rect_obj)
+
+
     #Potrzebne bo windowsize jest prywatne
     def getWindowSize(self):
         return self.__window_size
@@ -128,7 +149,7 @@ class Funkcje:
                       (13, 7)]
     def tura(self):
         font_obj = pygame.font.Font('freesansbold.ttf', 20)
-        rect2 = pygame.draw.rect(screen, self.__green, [600, 0, 400, 150])
+        rect2 = pygame.draw.rect(screen, self.__green, [600, 0, 375, 150])
         rect2_center = rect2.center  # srodek prostokatu(na tekst o turze)
         if self.__gracz == 1:
             tekst = "Tura Gracza 1 "
@@ -408,10 +429,28 @@ class Funkcje:
         print(self.__gracz)
         print(self.gracz1)
         print(self.gracz2)
+
     def getGracz(self):
         return self.__gracz
+
     def setGracz(self,gracz):
         self.__gracz = gracz
+
+    def ponawianie_gry(self, warunek):
+        while warunek == True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return True
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        print("kliknal klawisz spacje")
+                        warunek = False
+                        return False
+            clock.tick(60)
+            interfejs.draw_board(board)
+            pygame.display.flip()
+        pygame.quit()
+
 
 def Game(game_over):
     game.kto()
@@ -478,7 +517,17 @@ def Game(game_over):
                                 # tura(gracz)
 
                                 if game.czy_ktos_wygral(board) is True:
-                                    game_over = True
+                                    print("wygral")
+                                    interfejs.draw_board(board)
+                                    if game.ponawianie_gry(True) is True:
+                                        game_over = True
+                                    else:
+                                        if game.getGracz() == 2:
+                                            game.gracz1, game.gracz2 = game.gracz2, game.gracz1
+                                        interfejs.poczatkowe_rozmieszczenie(board)
+                                        game.setGracz(1)
+                                        game.tura()
+                                        Game(game_over)
 
                                 suma_teraz = sum([sum(row) for row in board])
 
@@ -514,7 +563,16 @@ def Game(game_over):
                             if game.krol(board, x, y, nowy_x, nowy_y) is True:
 
                                 if game.czy_ktos_wygral(board) is True:
-                                    game_over = True
+                                    print("wygral")
+                                    if game.ponawianie_gry(True) is True:
+                                        game_over = True
+                                    else:
+                                        if game.getGracz() == 2:
+                                            game.gracz1, game.gracz2 = game.gracz2, game.gracz1
+                                        interfejs.poczatkowe_rozmieszczenie(board)
+                                        game.setGracz(1)
+                                        game.tura()
+                                        Game(game_over)
 
                                 suma_teraz = sum([sum(row) for row in board])
 
