@@ -143,21 +143,37 @@ def ruch(gracz, board, x, y, nowy_x, nowy_y):
             print('2222',nowy_x - x)
             print('1111', nowy_y)
             print('2222', nowy_x)
+            print("ruch prawoo gora")
             return True
         elif (nowy_y - y) == -1 and (nowy_x - x) == -1:
             print(nowy_y-y)
             print(nowy_x-x)
+            print("ruch lewo gora2")
             return True
         elif (nowy_y - y) == -2 and (nowy_x - x) == 2:
-            if board[nowy_y + 1][nowy_x - 1] == gracz2['pionek'] or gracz2['krolowka']:
+            print("Board",board[nowy_y + 1][nowy_x - 1] )#swoj 1, przeciwny 2
+            print("Ten gracz",(gracz2['krolowka']or gracz2['krolowka']))#4
+            if board[nowy_y + 1][nowy_x - 1] == gracz2['pionek']:
+                print("Co jest", gracz2['pionek'])
+                print("Co jest", gracz1['pionek'])
+
                 board[nowy_y + 1][nowy_x - 1] = 0
+                print("BICIE3 prawo gora")
                 return True
+            elif board[nowy_y + 1][nowy_x - 1] == gracz1['pionek']:
+                print("Nie mozesz zbic swojego pionka...")
+                return False
             else:
+                print("Nie znajduje sie gracz2 pionek or kroolowka")
                 return False
         elif (nowy_y - y) == -2 and (nowy_x - x) == -2:
-            if board[nowy_y + 1][nowy_x + 1] == gracz2['pionek'] or gracz2['krolowka']:
+            if board[nowy_y + 1][nowy_x + 1] == gracz2['pionek']:
                 board[nowy_y + 1][nowy_x + 1] = 0
+                print("BICIE4 lewo gora")
                 return True
+            elif board[nowy_y + 1][nowy_x + 1] == gracz1['pionek']:
+                print("Nie mozesz zbic swojego pionka...")
+                return False
             else:
                 return False
         else:
@@ -175,15 +191,21 @@ def ruch(gracz, board, x, y, nowy_x, nowy_y):
         elif (nowy_y - y) == 1 and (nowy_x - x) == -1:
             return True
         elif (nowy_y - y) == 2 and (nowy_x - x) == 2:
-            if board[nowy_y - 1][nowy_x - 1] == gracz2['pionek'] or gracz2['krolowka']:
+            if board[nowy_y - 1][nowy_x - 1] == gracz1['pionek']:
                 board[nowy_y - 1][nowy_x - 1] = 0
                 return True
+            elif board[nowy_y - 1][nowy_x - 1] == gracz2['pionek']:
+                print("Nie mozesz zbic swojego pionka...")
+                return False
             else:
                 return False
         elif (nowy_y - y) == 2 and (nowy_x - x) == -2:
-            if board[nowy_y - 1][nowy_x + 1] == gracz2['pionek'] or gracz2['krolowka']:
+            if board[nowy_y - 1][nowy_x + 1] == gracz1['pionek']:
                 board[nowy_y - 1][nowy_x + 1] = 0
                 return True
+            elif board[nowy_y - 1][nowy_x + 1] == gracz2['pionek']:
+                print("Nie mozesz zbic swojego pionka...")
+                return False
             else:
                 return False
         else:
@@ -370,7 +392,6 @@ def Game(gracz1,gracz2,gracz,game_over):
     print("Tura gracza: ", gracz)
     tura(gracz)
     print("Nowa gra")
-    gracz =1
     while game_over == False:
         # print("NUUUUUUUUUUUUEEEEMR", numer)
         # tura(gracz)
