@@ -12,6 +12,7 @@ class Interface:
     __green = (0, 255, 0)
     __white = (255, 255, 255)
     __crimson = (220,20,60)
+    __darkgoldenrod2 = (238, 173, 14)
     #Rozmiary
     __window_size = [975, 600]
     __window_width = 600
@@ -109,9 +110,9 @@ class Interface:
         text_rect_obj.center = rect2_center
         self.__screen.blit(text_surface_obj, text_rect_obj)
 
-        rect4 = pygame.draw.rect(self.__screen, self.__green, [600, 155, 375, 290])
+        rect4 = pygame.draw.rect(self.__screen, self.__darkgoldenrod2, [600, 150, 375, 300])
         rect4_center = rect4.center  # srodek prostokatu
-        text_surface_obj = font_obj.render('Komunikaty', True, self.__black)
+        text_surface_obj = font_obj.render(game.getKomunikat(), True, self.__black)
         text_rect_obj = text_surface_obj.get_rect()
         text_rect_obj.center = rect4_center
         self.__screen.blit(text_surface_obj, text_rect_obj)
@@ -141,6 +142,7 @@ class Funkcje:
     gracz1 = {'pionek': 1, 'krolowka': 3}
     gracz2 = {'pionek': 2, 'krolowka': 4}
     __gracz = 1
+    __komunikat = 'Komunikaty'
     __przycisk_reset = [(8, 6), (9, 6), (10, 6), (11, 6), (12, 6), (13, 6), (8, 7), (9, 7), (10, 7), (11, 7), (12, 7),
                       (13, 7)]
 
@@ -163,28 +165,27 @@ class Funkcje:
     #Obsluguje wybor pionka
     def wybor(self,board, x, y):  # Gracz nie moze wybrac pustego pola lub nie swojego pionka
         wybor_tab = board[y][x]
-        # print("WYBORRRRRRRR",wybor_tab)
 
         if wybor_tab == self.gracz1['pionek'] or self.gracz1['krolowka']:
             return True
         elif wybor_tab == self.gracz2['pionek'] or self.gracz2['krolowka']:
-            print("Ten pionek nie należy do ciebie")
+            self.__komunikat = "Ten pionek nie należy do ciebie"
             return False
         else:
-            print("Tu nawet nie ma pionka")
+            self.__komunikat = "Tu nawet nie ma pionka"
             return False
 
     #Obsluguje mozliwe ruchy i mozliwe bicia
     def ruch(self, board, x, y, nowy_x, nowy_y):
         # Czy cos tam jest?
         if board[nowy_y][nowy_x] != 0:
-            print("Cos tu jest!")
+            self.__komunikat = "Cos tu jest!"
             return False
         # Ruch gracz1
         if board[y][x] == 1:
             # blokuje wyjscie za plansze
             if nowy_x == 8:
-                print("Nie mozna ruszać poza plansze")
+                self.__komunikat = "Nie mozna ruszać poza plansze"
                 return False
             if (nowy_y - y) == -1 and (nowy_x - x) == 1:
                 return True
@@ -195,7 +196,7 @@ class Funkcje:
                     board[nowy_y + 1][nowy_x - 1] = 0
                     return True
                 elif board[nowy_y + 1][nowy_x - 1] == self.gracz1['pionek']:
-                    print("Nie mozesz zbic swojego pionka...")
+                    self.__komunikat = "Nie mozesz zbic swojego pionka..."
                     return False
                 else:
                     return False
@@ -204,19 +205,19 @@ class Funkcje:
                     board[nowy_y + 1][nowy_x + 1] = 0
                     return True
                 elif board[nowy_y + 1][nowy_x + 1] == self.gracz1['pionek']:
-                    print("Nie mozesz zbic swojego pionka...")
+                    self.__komunikat = "Nie mozesz zbic swojego pionka..."
                     return False
                 else:
                     return False
             else:
-                print("Za daleko")
+                self.__komunikat = "Za daleko"
                 return False
 
         # ruch gracz2
         elif board[y][x] == 2:
             # blokuje wyjscie za plansze
             if nowy_x == 8:
-                print("Nie mozna ruszać poza plansze")
+                self.__komunikat = "Nie mozna ruszać poza plansze"
                 return False
             if (nowy_y - y) == 1 and (nowy_x - x) == 1:
                 return True
@@ -227,7 +228,7 @@ class Funkcje:
                     board[nowy_y - 1][nowy_x - 1] = 0
                     return True
                 elif board[nowy_y - 1][nowy_x - 1] == self.gracz1['pionek']:
-                    print("Nie mozesz zbic swojego pionka...")
+                    self.__komunikat = "Nie mozesz zbic swojego pionka..."
                 else:
                     return False
             elif (nowy_y - y) == 2 and (nowy_x - x) == -2:
@@ -235,11 +236,11 @@ class Funkcje:
                     board[nowy_y - 1][nowy_x + 1] = 0
                     return True
                 elif board[nowy_y - 1][nowy_x + 1] == self.gracz1['pionek']:
-                    print("Nie mozesz zbic swojego pionka...")
+                    self.__komunikat = "Nie mozesz zbic swojego pionka..."
                 else:
                     return False
             else:
-                print("Za daleko")
+                self.__komunikat = "Za daleko"
                 return False
 
     #Sprawdza czy w tablicy nie ma juz pionkow ktoregos gracza
@@ -249,7 +250,6 @@ class Funkcje:
             lista.append(row.count(self.gracz2['pionek']))
             lista.append(row.count(self.gracz2['krolowka']))
         if sum(lista) == 0:
-            print("Wygrał gracz: ", self.__gracz)
             return True
 
     #Sprawdza mozliwos podwojnego bicia
@@ -339,21 +339,24 @@ class Funkcje:
                 board[y][x] = 0
                 return True
         else:
-            print("Nie mozesz kilku jednoczesnie")
+            self.__komunikat = "Nie mozesz kilku jednoczesnie"
             return False
 
     #Obsluguje logike krolowek
     def krol(self, board, x, y, nowy_x, nowy_y):
+        if nowy_x == 8:
+            self.__komunikat = "Nie można ruszać poza planszę "
+            return False
         if board[nowy_y][nowy_x] != 0:
-            print("Ktos tutaj stoi")
+            self.__komunikat = "Ktos tutaj stoi"
             return False
 
         # niedozwolone ruchy
         if nowy_y == y:
-            print("Nie możesz wykonac takiego ruchu")
+            self.__komunikat = "Nie możesz wykonac takiego ruchu"
             return False
         if nowy_x == x:
-            print("Nie możesz wykonac takiego ruchu")
+            self.__komunikat = "Nie możesz wykonac takiego ruchu"
             return False
 
         if nowy_x > x and nowy_y > y:
@@ -412,8 +415,8 @@ class Funkcje:
     def reset(self,x, y):  # on bedzie inny
         if (x, y) in self.__przycisk_reset:
             interfejs.poczatkowe_rozmieszczenie(board)
-            print("Tura gracza: ", self.__gracz)
             self.tura()
+            self.__komunikat = "Komunikaty"
             return True
 
     #Funkcje pomocnicze
@@ -425,6 +428,10 @@ class Funkcje:
         return self.__gracz
     def setGracz(self,gracz):
         self.__gracz = gracz
+    def getKomunikat(self):
+        return self.__komunikat
+    def setKomunikat(self,komunikat):
+        self.__komunikat = komunikat
 
     #Funkcja odpowiedzialna za ponawianie gry po wygranej danego gracza
     def ponawianie_gry(self, warunek):
@@ -433,8 +440,9 @@ class Funkcje:
                 if event.type == pygame.QUIT:
                     return True
                 elif event.type == pygame.KEYDOWN:
+                    self.__komunikat = 'Kliknij Spacje'
                     if event.key == pygame.K_SPACE:
-                        print("Kliknal klawisz spacje")
+                        self.__komunikat ="Komunikaty"
                         warunek = False
                         return False
             clock.tick(60)
@@ -444,6 +452,7 @@ class Funkcje:
 
 #Funkcja mojej gry
 def Game(game_over):
+    iterator = 0#Do aktualizacji komuniaktu
     while game_over == False:
         game.tura()
         for event in pygame.event.get():
@@ -574,6 +583,11 @@ def Game(game_over):
                         break
         clock.tick(60)
         interfejs.draw_board(board)
+        #Znikanie starego komunikatu po uplywie czasu
+        iterator += 1
+        if iterator == 300:
+            game.setKomunikat("Komunikaty")
+            iterator = 0
         #Update screen
         pygame.display.flip()
     #Exit

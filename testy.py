@@ -60,10 +60,8 @@ class TestWarcaby(unittest.TestCase):
                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
         suma_wczesniej = sum([sum(row) for row in board2])
-        print(suma_wczesniej)
         result1 = warcaby.Funkcje.ruch(warcaby.game, board2, 3, 2, 5, 4)
         suma_teraz = sum([sum(row) for row in board2])
-        print(suma_teraz)
         self.assertIs(result1, True)
         warcaby.game.setGracz(2)
         if suma_wczesniej > suma_teraz:
@@ -77,7 +75,6 @@ class TestWarcaby(unittest.TestCase):
 
         result1 = warcaby.Funkcje.ruch(warcaby.game, board1, 7, 6, 6, 7)
         self.assertIs(result1, True)
-
         self.assertIs(board1[6][7], 2)
 
     #6 Bicie damką
