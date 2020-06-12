@@ -254,7 +254,6 @@ class Funkcje:
         for row in board:
             lista.append(row.count(self.gracz2['pionek']))
             lista.append(row.count(self.gracz2['krolowka']))
-            # Jeszcze dla krolowek zrobiccccc
         if sum(lista) == 0:
             print("Wygrał gracz: ", self.__gracz)
             return True
@@ -451,7 +450,6 @@ class Funkcje:
             pygame.display.flip()
         pygame.quit()
 
-
 def Game(game_over):
     game.kto()
     while game_over == False:
@@ -536,6 +534,7 @@ def Game(game_over):
                                 # tu sobie sprawdzam czy suma pionkow ulegla zmianie i dokonuje zmiany lub nie
                                 if suma_wczesniej > suma_teraz:
                                     # i czy gracz bedzie mial kolejny ruch(zasada ze po biciu drugi ruch gdy mozliwe bicie)
+                                    print("Drugie biecieeeee ", nowy_x,nowy_y)
                                     if game.podwojne_bicie(board, nowy_x, nowy_y) is True:
                                         pass
                                     else:
@@ -634,3 +633,121 @@ clock = pygame.time.Clock()
 game = Funkcje()
 #Rozpoczynam gre
 Game(game_over)
+
+
+import unittest
+
+
+class TestWarcaby(unittest.TestCase):
+    #1 Wykonanie po dwa ruchy przez kazdego z graczy
+    def test_jeden(self):
+        #Pierwszy ruch gracza 1
+        result = Funkcje.ruch(game,board,6,5,5,4)
+        self.assertIs(result,True)
+        #Zmiana gracza
+        if game.getGracz() == 1:
+            game.setGracz(2)
+        else:
+            game.setGracz(1)
+        game.gracz1, game.gracz2 = game.gracz2, game.gracz1
+        #Pierwszy ruch gracza 2
+        result = Funkcje.ruch(game,board,5,2,4,3)
+        self.assertIs(result,True)
+        #Zmiana gracza
+        if game.getGracz() == 1:
+            game.setGracz(2)
+        else:
+            game.setGracz(1)
+        game.gracz1, game.gracz2 = game.gracz2, game.gracz1
+        # Drugi ruch gracza 1
+        result = Funkcje.ruch(game, board, 0, 5, 1, 4)
+        self.assertIs(result, True)
+        # Zmiana gracza
+        if game.getGracz() == 1:
+            game.setGracz(2)
+        else:
+            game.setGracz(1)
+        game.gracz1, game.gracz2 = game.gracz2, game.gracz1
+        # Drugi ruch gracza 2
+        result = Funkcje.ruch(game, board, 3, 2, 2, 3)
+        self.assertIs(result, True)
+    #2 Niepowodzenie błędnego ruchu pionkiem
+    def test_dwa(self):
+        result = Funkcje.ruch(game,board,6,5,4,3)
+        self.assertIs(result,False)
+
+    #3 Wykonanie bicia pojedynczego pionka
+    def test_trzy(self):
+        board1 = [[0, 2, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0], [2, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0], [0, 2, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0], [0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0], [1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+        game.setGracz(1)
+        result = Funkcje.ruch(game, board1, 5, 4, 3, 2)
+        self.assertIs(result, True)
+
+
+    #Wykonanie bicia przynajmniej dwóch pionków
+    def test_cztery(self):
+        game.setGracz(2)
+        game.gracz1, game.gracz2 = game.gracz2, game.gracz1
+        board2 = [[0, 2, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0], [2, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0],
+                  [0, 2, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0], [2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0],
+                  [0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0], [1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+        suma_wczesniej = sum([sum(row) for row in board2])
+        print(suma_wczesniej)
+        result1 = Funkcje.ruch(game, board2, 3, 2, 5, 4)
+        suma_teraz = sum([sum(row) for row in board2])
+        print(suma_teraz)
+        self.assertIs(result1, True)
+        game.setGracz(2)
+        if suma_wczesniej > suma_teraz:
+            # i czy gracz bedzie mial kolejny ruch(zasada ze po biciu drugi ruch gdy mozliwe bicie)
+            result2 = Funkcje.podwojne_bicie(game, board2, 5, 4)
+        self.assertIs(result2, True)
+
+    #5 Zamiana pionka na damke
+    def test_piec(self):
+        board1 = [[0, 2, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0], [2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0], [0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0], [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 1, 0, 1, 0, 2, 0, 0, 0, 0, 0], [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+        result1 = Funkcje.ruch(game, board1, 7, 6, 6, 7)
+        self.assertIs(result1, True)
+
+        self.assertIs(board1[6][7], 2)
+
+    #6 Bicie damką
+    def test_szesc(self):
+        board1 = [[0, 2, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0], [2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0], [0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0], [1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0], [0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 0, 1, 0, 1, 0, 3, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+        result = Funkcje.krol(game, board1, 6, 7, 3, 4)
+        self.assertIs(result, True)
+
+
+    #7 Wygrana gracza grajacego czarnymi pionkami
+    def test_siedem(self):
+
+        board = [[0, 2, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0], [2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0], [0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+        result = Funkcje.czy_ktos_wygral(game, board)
+        game.gracz1, game.gracz2 = game.gracz2, game.gracz1
+        self.assertIs(result, True)
+
+    #8 Rozpoczecie nowej gry po zwyciestwie jednego z graczy
+    def test_osiem(self):
+        game.gracz1, game.gracz2 = game.gracz2, game.gracz1
+        board = [[0, 2, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0], [2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0], [0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+        result = Funkcje.czy_ktos_wygral(game, board)
+        self.assertIs(result, True)
+
+        result2 = game.ponawianie_gry(True) is True
+        self.assertIs(result2, False)
+
+        if game.getGracz() == 2:
+            game.gracz1, game.gracz2 = game.gracz2, game.gracz1
+        interfejs.poczatkowe_rozmieszczenie(board)
+        game.setGracz(1)
+        Game(game_over)
+
+
+if __name__ == '__main__':
+    unittest.main()
