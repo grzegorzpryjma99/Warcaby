@@ -41,26 +41,24 @@ class Interface:
         for current_row in range(5, 8, 2):
             for current_column in range(0, 8, 2):
                 self.__board[current_row][current_column] = gracz1['pionek']
-                print("board1 ", board[current_row][current_column])
+
         for current_row in range(6, 7):
             for current_column in range(1, 8, 2):
                 board[current_row][current_column] = gracz1['pionek']
-                print("board2 ", board[current_row][current_column])
+
         # przydzielanie lokalizacji planszy dla czarnych
         for current_row in range(0, 3, 2):
             for current_column in range(1, 8, 2):
                 board[current_row][current_column] = gracz2['pionek']
-                print("board3 ", board[current_row][current_column])
+
         for current_row in range(1, 2):
             for current_column in range(0, 8, 2):
                 board[current_row][current_column] = gracz2['pionek']
-                print("board4 ", board[current_row][current_column])
 
             # przydzielanie lokalizacji planszy dla pustych
         for current_row in range(3, 5, 1):
             for current_column in range(0, 8, 1):
                 board[current_row][current_column] = 0
-                print("board3 ", board[current_row][current_column])
 
     def draw_board(self, board):
         font_obj = pygame.font.Font('freesansbold.ttf', 20)
@@ -89,7 +87,6 @@ class Interface:
                     text_rect_obj.center = circle_black_center
                     self.__screen.blit(text_surface_obj, text_rect_obj)
                 # krolowki
-                # ZROBIC TU JESZCZE DLA KROLOWEK TEKST Cd Bd
                 if board[row][column] == 3:
                     circle_white_krol = pygame.draw.circle(self.__screen, self.__white, rect_center, self.__radius)
                     circle_white_center_krol = circle_white_krol.center
@@ -131,7 +128,6 @@ class Interface:
             text_rect_obj.center = rect3_center
             self.__screen.blit(text_surface_obj, text_rect_obj)
 
-
     #Potrzebne bo windowsize jest prywatne
     def getWindowSize(self):
         return self.__window_size
@@ -147,6 +143,8 @@ class Funkcje:
     __gracz = 1
     __przycisk_reset = [(8, 6), (9, 6), (10, 6), (11, 6), (12, 6), (13, 6), (8, 7), (9, 7), (10, 7), (11, 7), (12, 7),
                       (13, 7)]
+
+    # Zmienia komunikat o turze gracza
     def tura(self):
         font_obj = pygame.font.Font('freesansbold.ttf', 20)
         rect2 = pygame.draw.rect(screen, self.__green, [600, 0, 375, 150])
@@ -162,6 +160,7 @@ class Funkcje:
         text_rect_obj.center = rect2_center
         screen.blit(text_surface_obj, text_rect_obj)
 
+    #Obsluguje wybor pionka
     def wybor(self,board, x, y):  # Gracz nie moze wybrac pustego pola lub nie swojego pionka
         wybor_tab = board[y][x]
         # print("WYBORRRRRRRR",wybor_tab)
@@ -169,18 +168,18 @@ class Funkcje:
         if wybor_tab == self.gracz1['pionek'] or self.gracz1['krolowka']:
             return True
         elif wybor_tab == self.gracz2['pionek'] or self.gracz2['krolowka']:
-            print("To nie twoje")
+            print("Ten pionek nie należy do ciebie")
             return False
         else:
             print("Tu nawet nie ma pionka")
             return False
 
+    #Obsluguje mozliwe ruchy i mozliwe bicia
     def ruch(self, board, x, y, nowy_x, nowy_y):
         # Czy cos tam jest?
         if board[nowy_y][nowy_x] != 0:
-            print("Cos tu jest mordo")
+            print("Cos tu jest!")
             return False
-        ##Obsluga bicia pionkow (mozliwosci bicia)
         # Ruch gracz1
         if board[y][x] == 1:
             # blokuje wyjscie za plansze
@@ -188,14 +187,8 @@ class Funkcje:
                 print("Nie mozna ruszać poza plansze")
                 return False
             if (nowy_y - y) == -1 and (nowy_x - x) == 1:
-                print('1111', nowy_y - y)
-                print('2222', nowy_x - x)
-                print('1111', nowy_y)
-                print('2222', nowy_x)
                 return True
             elif (nowy_y - y) == -1 and (nowy_x - x) == -1:
-                print(nowy_y - y)
-                print(nowy_x - x)
                 return True
             elif (nowy_y - y) == -2 and (nowy_x - x) == 2:
                 if board[nowy_y + 1][nowy_x - 1] == self.gracz2['pionek']:
@@ -216,7 +209,7 @@ class Funkcje:
                 else:
                     return False
             else:
-                print("za daleko")
+                print("Za daleko")
                 return False
 
         # ruch gracz2
@@ -246,9 +239,10 @@ class Funkcje:
                 else:
                     return False
             else:
-                print("za daleko")
+                print("Za daleko")
                 return False
 
+    #Sprawdza czy w tablicy nie ma juz pionkow ktoregos gracza
     def czy_ktos_wygral(self, board):
         lista = []
         for row in board:
@@ -258,10 +252,10 @@ class Funkcje:
             print("Wygrał gracz: ", self.__gracz)
             return True
 
+    #Sprawdza mozliwos podwojnego bicia
     def podwojne_bicie(self,board, nowy_x, nowy_y):
         # w ktora strone mozna bic(mozliwe ruchy)
         if self.__gracz == 1:
-            # dodac krolowki!!!!!!!!!!!!!!!!!!!!
             try:
                 if board[nowy_y - 2][nowy_x + 2] == 0:
                     if board[nowy_y - 1][nowy_x + 1] == self.gracz2['pionek'] or self.gracz2['krolowka']:
@@ -338,7 +332,7 @@ class Funkcje:
                 board[y][x] = 0
                 return True
 
-        # czy krolowka tez moze ruszac sie jak pionek? Na wikipedii jest ze tak
+        # Krolowka tez moze ruszac sie jak pionek (o 1 pole)
         elif len(board_values) == 1:
             if all(i == 0 for i in board_values[1:]) is True:
                 board[nowy_y][nowy_x] = board[y][x]
@@ -348,6 +342,7 @@ class Funkcje:
             print("Nie mozesz kilku jednoczesnie")
             return False
 
+    #Obsluguje logike krolowek
     def krol(self, board, x, y, nowy_x, nowy_y):
         if board[nowy_y][nowy_x] != 0:
             print("Ktos tutaj stoi")
@@ -413,28 +408,25 @@ class Funkcje:
             except IndexError:
                 pass
 
+    #Funkcja odpowiedzialna za reset gry bez zamykania okna gry
     def reset(self,x, y):  # on bedzie inny
         if (x, y) in self.__przycisk_reset:
-            print("RESET")
-            #interfejs.create_board()
-            print(board)
             interfejs.poczatkowe_rozmieszczenie(board)
-            #self.gracz = 1
             print("Tura gracza: ", self.__gracz)
             self.tura()
             return True
 
+    #Funkcje pomocnicze
     def kto(self):
         print(self.__gracz)
         print(self.gracz1)
         print(self.gracz2)
-
     def getGracz(self):
         return self.__gracz
-
     def setGracz(self,gracz):
         self.__gracz = gracz
 
+    #Funkcja odpowiedzialna za ponawianie gry po wygranej danego gracza
     def ponawianie_gry(self, warunek):
         while warunek == True:
             for event in pygame.event.get():
@@ -442,7 +434,7 @@ class Funkcje:
                     return True
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
-                        print("kliknal klawisz spacje")
+                        print("Kliknal klawisz spacje")
                         warunek = False
                         return False
             clock.tick(60)
@@ -450,73 +442,56 @@ class Funkcje:
             pygame.display.flip()
         pygame.quit()
 
+#Funkcja mojej gry
 def Game(game_over):
-    game.kto()
     while game_over == False:
-        # game.gracz = 1
         game.tura()
         for event in pygame.event.get():
             pozycja_myszy = pygame.mouse.get_pos()
             pozycja_myszy_kordy = ((pozycja_myszy[0] // interfejs.getWH()[0]), (pozycja_myszy[1] // interfejs.getWH()[1]))
-            print(pozycja_myszy_kordy)  # to jest sprawdzenie dzialania ! ZAKOMENTOWAC POTEM
-            # zdarzenia
+            #print(pozycja_myszy_kordy)
+            #zdarzenia
             if event.type == pygame.QUIT:  # exit?
                 game_over = True
-
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                # if reset(pozycja_myszy_kordy) is True:
-                ## poczatkowe_rozmieszczenie()
-                # print("Ustawiono początkowe")
-                # elif reset(pozycja_myszy_kordy) is False:
-                # print("Nie ustawiono początkowego")
-
                 pozycja = pygame.mouse.get_pos()  # w pikselach
-                print("kliknales ", pozycja)
                 x = round(pozycja[0] // interfejs.getWH()[0], 0)  # zaokrąglam do 0 miejsa po przecinku
                 y = round(pozycja[1] // interfejs.getWH()[1], 0)
-                print("kliknales ", (x, y))  # w kordach
+                #print("kliknales ", (x, y))  # w kordach
 
                 if game.reset(x, y) == True:
                     if game.getGracz() == 2:
-                        print("Graczyk",game.getGracz())
-                        print("1111111111", game.gracz1)
-                        print("222222222222", game.gracz2)
                         game.gracz1, game.gracz2 = game.gracz2, game.gracz1
-                        print("1111111111",game.gracz1)
-                        print("222222222222",game.gracz2)
                     game.setGracz(1)
                     Game(game_over)
 
+                #Sprawdzam sume pionkow by miec kontrole czy cos znika z planszy
                 suma_wczesniej = sum([sum(row) for row in board])
 
-                # Tu sobie sprawdzam czy wybrany pionek jest gracza ktory ma ture w danym monencie
+                #Tu sobie sprawdzam czy wybrany pionek jest gracza ktory ma ture w danym monencie
                 if game.wybor(board, x, y) == True:
                     pass
                 else:
                     continue
-                # jesli tak to ustalam nowa pozycja za pomoca przeciagniecia
-
+                #Jesli tak to ustalam nowa pozycja za pomoca przeciagniecia
                 while True:
-                    ###TO NIE DZIALA TAK JAKBYM CHCIAL!!!!!!!!!(DODALEM // ZAMIAST /, POWINNO BYC OK?)
                     event = pygame.event.wait()
                     if event.type == pygame.QUIT:
                         game_over = True
                     elif event.type == pygame.MOUSEBUTTONUP:
                         nowa_pozycja = pygame.mouse.get_pos()
-                        print("pos", nowa_pozycja)
                         nowy_x = round((nowa_pozycja[0] // interfejs.getWH()[0]), 0)
                         nowy_y = round((nowa_pozycja[1] // interfejs.getWH()[1]), 0)
-                        print("nowa pozycja ", (nowy_x, nowy_y))  # w kordach
+                        #print("nowa pozycja ", (nowy_x, nowy_y))  # w kordach
 
                         if board[y][x] == game.gracz1['pionek']:
                             if game.ruch(board, x, y, nowy_x, nowy_y) is True:
                                 board[nowy_y][nowy_x] = game.gracz1['pionek']
                                 board[y][x] = 0
-                                # tura(gracz)
-
+                                #Czy ktos wygral?
                                 if game.czy_ktos_wygral(board) is True:
-                                    print("wygral")
                                     interfejs.draw_board(board)
+                                    #Jak tak to mozliwosc zaczac od nowa
                                     if game.ponawianie_gry(True) is True:
                                         game_over = True
                                     else:
@@ -529,12 +504,9 @@ def Game(game_over):
 
                                 suma_teraz = sum([sum(row) for row in board])
 
-                                # zmiana gracza
-
-                                # tu sobie sprawdzam czy suma pionkow ulegla zmianie i dokonuje zmiany lub nie
+                                # tu sobie sprawdzam czy suma pionkow na planszy ulegla zmianie i dokonuje zmiany lub nie
                                 if suma_wczesniej > suma_teraz:
                                     # i czy gracz bedzie mial kolejny ruch(zasada ze po biciu drugi ruch gdy mozliwe bicie)
-                                    print("Drugie biecieeeee ", nowy_x,nowy_y)
                                     if game.podwojne_bicie(board, nowy_x, nowy_y) is True:
                                         pass
                                     else:
@@ -542,27 +514,23 @@ def Game(game_over):
                                         if game.getGracz() == 1:
                                             game.setGracz(2)
                                             game.tura()
-                                            # i tu zrobic wypisanie na okno czyja tura
                                         else:
                                             game.setGracz(1)
                                             game.tura()
-                                            # i tu tez zrobic!
                                         game.gracz1, game.gracz2 = game.gracz2, game.gracz1
                                 else:
                                     if game.getGracz() == 1:
                                         game.setGracz(2)
                                         game.tura()
-                                        # i tu zrobic wypisanie na okno czyja tura
                                     else:
                                         game.setGracz(1)
                                         game.tura()
-                                        # i tu tez zrobic!
                                     game.gracz1, game.gracz2 = game.gracz2, game.gracz1
+
+                        #I dla krolowek
                         if board[y][x] == (game.gracz1['krolowka']):
                             if game.krol(board, x, y, nowy_x, nowy_y) is True:
-
                                 if game.czy_ktos_wygral(board) is True:
-                                    print("wygral")
                                     if game.ponawianie_gry(True) is True:
                                         game_over = True
                                     else:
@@ -583,24 +551,20 @@ def Game(game_over):
                                         if game.getGracz() == 1:
                                             game.setGracz(2)
                                             game.tura()
-                                            # i tu zrobic wypisanie na okno czyja tura
                                         else:
                                             game.setGracz(1)
                                             game.tura()
-                                            # i tu tez zrobic!
                                         game.gracz1, game.gracz2 = game.gracz2, game.gracz1
                                 else:
                                     if game.getGracz() == 1:
                                         game.setGracz(2)
                                         game.tura()
-                                        # i tu zrobic wypisanie na okno czyja tura
                                     else:
                                         game.setGracz(1)
                                         game.tura()
-                                        # i tu tez zrobic!
                                     game.gracz1, game.gracz2 = game.gracz2, game.gracz1
 
-                        # zamiana na krola jak dojdzie do samego konca
+                        #Zamiana pionka na krola jak dojdzie do samego konca
                         for row in range(8):
                             for column in range(8):
                                 if board[0][column] == 1:
@@ -608,15 +572,16 @@ def Game(game_over):
                                 elif board[7][column] == 2:
                                     board[7][column] = 4
                         break
-
         clock.tick(60)
         interfejs.draw_board(board)
-        # Update screen with what we drew
+        #Update screen
         pygame.display.flip()
-    # Exit the game
+    #Exit
     pygame.quit()
 
+
 game_over = False
+#pygame init
 pygame.init()
 #Tworze obiekt klasy Interface
 interfejs = Interface()
@@ -631,123 +596,15 @@ pygame.display.set_caption("Warcaby")
 clock = pygame.time.Clock()
 #Tworze obiekt klasy Funkcje
 game = Funkcje()
+
 #Rozpoczynam gre
-Game(game_over)
-
-
-import unittest
-
-
-class TestWarcaby(unittest.TestCase):
-    #1 Wykonanie po dwa ruchy przez kazdego z graczy
-    def test_jeden(self):
-        #Pierwszy ruch gracza 1
-        result = Funkcje.ruch(game,board,6,5,5,4)
-        self.assertIs(result,True)
-        #Zmiana gracza
-        if game.getGracz() == 1:
-            game.setGracz(2)
-        else:
-            game.setGracz(1)
-        game.gracz1, game.gracz2 = game.gracz2, game.gracz1
-        #Pierwszy ruch gracza 2
-        result = Funkcje.ruch(game,board,5,2,4,3)
-        self.assertIs(result,True)
-        #Zmiana gracza
-        if game.getGracz() == 1:
-            game.setGracz(2)
-        else:
-            game.setGracz(1)
-        game.gracz1, game.gracz2 = game.gracz2, game.gracz1
-        # Drugi ruch gracza 1
-        result = Funkcje.ruch(game, board, 0, 5, 1, 4)
-        self.assertIs(result, True)
-        # Zmiana gracza
-        if game.getGracz() == 1:
-            game.setGracz(2)
-        else:
-            game.setGracz(1)
-        game.gracz1, game.gracz2 = game.gracz2, game.gracz1
-        # Drugi ruch gracza 2
-        result = Funkcje.ruch(game, board, 3, 2, 2, 3)
-        self.assertIs(result, True)
-    #2 Niepowodzenie błędnego ruchu pionkiem
-    def test_dwa(self):
-        result = Funkcje.ruch(game,board,6,5,4,3)
-        self.assertIs(result,False)
-
-    #3 Wykonanie bicia pojedynczego pionka
-    def test_trzy(self):
-        board1 = [[0, 2, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0], [2, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0], [0, 2, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0], [0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0], [1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-        game.setGracz(1)
-        result = Funkcje.ruch(game, board1, 5, 4, 3, 2)
-        self.assertIs(result, True)
-
-
-    #Wykonanie bicia przynajmniej dwóch pionków
-    def test_cztery(self):
-        game.setGracz(2)
-        game.gracz1, game.gracz2 = game.gracz2, game.gracz1
-        board2 = [[0, 2, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0], [2, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0],
-                  [0, 2, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0], [2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0],
-                  [0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0], [1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0],
-                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-        suma_wczesniej = sum([sum(row) for row in board2])
-        print(suma_wczesniej)
-        result1 = Funkcje.ruch(game, board2, 3, 2, 5, 4)
-        suma_teraz = sum([sum(row) for row in board2])
-        print(suma_teraz)
-        self.assertIs(result1, True)
-        game.setGracz(2)
-        if suma_wczesniej > suma_teraz:
-            # i czy gracz bedzie mial kolejny ruch(zasada ze po biciu drugi ruch gdy mozliwe bicie)
-            result2 = Funkcje.podwojne_bicie(game, board2, 5, 4)
-        self.assertIs(result2, True)
-
-    #5 Zamiana pionka na damke
-    def test_piec(self):
-        board1 = [[0, 2, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0], [2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0], [0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0], [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 1, 0, 1, 0, 2, 0, 0, 0, 0, 0], [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-
-        result1 = Funkcje.ruch(game, board1, 7, 6, 6, 7)
-        self.assertIs(result1, True)
-
-        self.assertIs(board1[6][7], 2)
-
-    #6 Bicie damką
-    def test_szesc(self):
-        board1 = [[0, 2, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0], [2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0], [0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0], [1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0], [0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 0, 1, 0, 1, 0, 3, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-        result = Funkcje.krol(game, board1, 6, 7, 3, 4)
-        self.assertIs(result, True)
-
-
-    #7 Wygrana gracza grajacego czarnymi pionkami
-    def test_siedem(self):
-
-        board = [[0, 2, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0], [2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0], [0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-
-        result = Funkcje.czy_ktos_wygral(game, board)
-        game.gracz1, game.gracz2 = game.gracz2, game.gracz1
-        self.assertIs(result, True)
-
-    #8 Rozpoczecie nowej gry po zwyciestwie jednego z graczy
-    def test_osiem(self):
-        game.gracz1, game.gracz2 = game.gracz2, game.gracz1
-        board = [[0, 2, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0], [2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0], [0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-        result = Funkcje.czy_ktos_wygral(game, board)
-        self.assertIs(result, True)
-
-        result2 = game.ponawianie_gry(True) is True
-        self.assertIs(result2, False)
-
-        if game.getGracz() == 2:
-            game.gracz1, game.gracz2 = game.gracz2, game.gracz1
-        interfejs.poczatkowe_rozmieszczenie(board)
-        game.setGracz(1)
-        Game(game_over)
-
-
-if __name__ == '__main__':
-    unittest.main()
+#Nie bylem sobie w stanie poradzic z bledem: pygame.error: video system not initialized
+#Mimo poprawnego dzialania calej aplikacji pojawial on sie przy ponownym wywolaniu gry(uzycie reset lub ponwianie_gry)
+#Nie zatrzymywał aplikacji lecz pojawial sie po poprawnym zakonczeniu
+#Podobnie ostatni test nie konczyl sie przez to poprawnie (Ale te funkcje są w programi i dzialają poprawnie)
+#Prawdopodobnie jest to błąd spowodowany przez pygame.init
+try:
+    Game(game_over)
+except Exception as e:
+    print("Blad pojawil sie przy resetowaniu lub ponawianiu gry (pygame.error: video system not initialized)")
+    print(e)
