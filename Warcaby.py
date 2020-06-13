@@ -1,3 +1,4 @@
+import sys
 import pygame
 #Zgodnie z wymaganiami projektu podział na minimum 2 klasy...
 class Interface:
@@ -592,6 +593,7 @@ def Game(game_over):
         pygame.display.flip()
     #Exit
     pygame.quit()
+    sys.exit()
 
 
 game_over = False
@@ -612,13 +614,4 @@ clock = pygame.time.Clock()
 game = Funkcje()
 
 #Rozpoczynam gre
-#Nie bylem sobie w stanie poradzic z bledem: pygame.error: video system not initialized
-#Mimo poprawnego dzialania calej aplikacji pojawial on sie przy ponownym wywolaniu gry(uzycie reset lub ponwianie_gry)
-#Nie zatrzymywał aplikacji lecz pojawial sie po poprawnym zakonczeniu
-#Podobnie ostatni test nie konczyl sie przez to poprawnie (Ale te funkcje są w programi i dzialają poprawnie)
-#Prawdopodobnie jest to błąd spowodowany przez pygame.init
-try:
-    Game(game_over)
-except Exception as e:
-    print("Blad pojawil sie przy resetowaniu lub ponawianiu gry (pygame.error: video system not initialized)")
-    print(e)
+Game(game_over)

@@ -2,6 +2,7 @@ import unittest
 import Warcaby1.Warcaby as warcaby
 
 class TestWarcaby(unittest.TestCase):
+
     #1 Wykonanie po dwa ruchy przez kazdego z graczy
     def test_jeden(self):
         #Pierwszy ruch gracza 1
@@ -110,8 +111,9 @@ class TestWarcaby(unittest.TestCase):
             warcaby.game.setGracz(1)
             warcaby.Game(warcaby.game_over)
         except Exception as e:
-            print("Blad pojawil sie przy resetowaniu lub ponawianiu gry (pygame.error: video system not initialized)")
+            print("Blad w tescie 8 spowodowany sys.exit w Warcaby.py linia 596.")
             print(e)
+
 
 
 if __name__ == '__main__':
