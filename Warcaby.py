@@ -593,7 +593,7 @@ def Game(game_over):
         pygame.display.flip()
     #Exit
     pygame.quit()
-    sys.exit()
+    #sys.exit()
 
 
 game_over = False
