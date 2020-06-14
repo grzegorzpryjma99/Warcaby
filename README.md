@@ -1,5 +1,5 @@
-##Warcaby
-#Opis zadania
+#Warcaby
+##Opis zadania
 * Okno z siatką przycisków 8x8 oraz przyciskiem do resetowania gry.
 * Przyciski reprezentują pola planszy do gry w warcaby. Pola puste -przAyciski bez tekstu. Pola z pionkami gracza 1 -przycisk z tekstem “C”. Pola z pionkami gracza 2 -przycisk z tekstem “B”. Damki oznaczane są dodatkową literą d (“Cd”, “Bd”).
 * Nad planszą wyświetlana jest informacja “Tura gracza 1” lub “Tura gracza 2”.

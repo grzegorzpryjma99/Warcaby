@@ -615,3 +615,4 @@ game = Funkcje()
 
 #Rozpoczynam gre
 Game(game_over)
+

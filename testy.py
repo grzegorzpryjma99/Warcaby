@@ -114,7 +114,5 @@ class TestWarcaby(unittest.TestCase):
             print("Blad w tescie 8 spowodowany sys.exit w Warcaby.py linia 596.")
             print(e)
 
-
-
 if __name__ == '__main__':
     unittest.main()
